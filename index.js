@@ -1,7 +1,7 @@
+require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const {MongoClient, ServerApiVersion, ObjectId} = require('mongodb')
-require('dotenv').config()
 const app = express()
 const port = 5000;
 
@@ -22,9 +22,10 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try{
-        await client.connect();
+        // await client.connect();
         const articlesCollection = client.db('KnowledgeShare').collection('allArticles')
         const articlesLikeCollection = client.db('KnowledgeShare').collection('articleLike')
+        const articlesCommentCollection = client.db('KnowledgeShare').collection('articleComment')
         
 
         app.get('/articles', async(req, res)=>{
@@ -86,10 +87,23 @@ async function run() {
             res.send(result)
         })
 
+        // comment Section
+
+        app.get('/article/comment', async(req, res)=>{
+            const result = articlesCommentCollection.find().toArray()
+            res.send(result)
+        })
+
+        app.post('/article/comment', async(req, res)=>{
+            const data = req.body;
+            const result = await articlesCommentCollection.insertOne(data);
+            res.send(result)
+        })
+
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
     }
     finally{
 
