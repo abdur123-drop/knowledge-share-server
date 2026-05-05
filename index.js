@@ -10,7 +10,7 @@ app.use(express.json())
 app.use(cors())
 
 const admin = require("firebase-admin");
-const serviceAccount = require("./knowledge-share-security.json");
+const serviceAccount = require("/knowledge-share-secrate.json");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
