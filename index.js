@@ -9,44 +9,41 @@ const port = 5000;
 app.use(express.json())
 app.use(cors())
 
-const admin = require("firebase-admin");
-admin.initializeApp({
-  credential: admin.credential.cert({
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-  })
-});
+// const admin = require("firebase-admin");
+// const serviceAccount = require("/knowledge-share-secrate.json");
+// admin.initializeApp({
+//   credential: admin.credential.cert(serviceAccount)
+// });
 
-// firebase token verify
+// // firebase token verify
 
-const firebaseTokenVerify = async(req, res, next)=>{
-    const authentication = req.headers?.authorization;
+// const firebaseTokenVerify = async(req, res, next)=>{
+//     const authentication = req.headers?.authorization;
 
-    if(!authentication || !authentication.startsWith('Bearer ')){
-        return res.status(401).send({message: 'Unauthorization'})
-    }
-    const token = authentication.split(' ')[1]
-    if(!token){
-        return res.status(401).send({message: 'Unauthorization'})
-    }
-    try{
-        const decoded = await admin.auth().verifyIdToken(token)
+//     if(!authentication || !authentication.startsWith('Bearer ')){
+//         return res.status(401).send({message: 'Unauthorization'})
+//     }
+//     const token = authentication.split(' ')[1]
+//     if(!token){
+//         return res.status(401).send({message: 'Unauthorization'})
+//     }
+//     try{
+//         const decoded = await admin.auth().verifyIdToken(token)
         
-        req.decoded = decoded;
-        next()
-    } catch(error){
-        return res.status(401).send({message: 'Unauthorized'})
-    }
-}
+//         req.decoded = decoded;
+//         next()
+//     } catch(error){
+//         return res.status(401).send({message: 'Unauthorized'})
+//     }
+// }
 
-// email verify
-const emailVerify = (req, res, next)=>{
-    if(req.query.email !== req.decoded.email){
-        return res.status(401).send({message: 'Unauthorized'})
-    }
-    next()
-}
+// // email verify
+// const emailVerify = (req, res, next)=>{
+//     if(req.query.email !== req.decoded.email){
+//         return res.status(401).send({message: 'Unauthorized'})
+//     }
+//     next()
+// }
 
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASSWORD}@cluster0.bki3sjk.mongodb.net/?appName=Cluster0`;
 
@@ -88,7 +85,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/articles/:id',firebaseTokenVerify, async(req, res)=>{
+        app.get('/articles/:id', async(req, res)=>{ //
             const id = req.params.id;
             const objId = {_id: new ObjectId(id)}
             const result = await articlesCollection.findOne(objId);
@@ -131,7 +128,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/article/like/:articleId',firebaseTokenVerify, async(req, res)=>{
+        app.get('/article/like/:articleId', async(req, res)=>{ //
             const {articleId} = req.params;
             const objId = {articleId: articleId}
             const result = await articlesLikeCollection.find(objId).toArray()
@@ -157,7 +154,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/article/comment/:id',firebaseTokenVerify, async(req, res)=>{
+        app.get('/article/comment/:id', async(req, res)=>{ //
             const id = req.params.id
             const articleId= {articleId: id}
             const result = await articlesCommentCollection.find(articleId).toArray()
@@ -176,7 +173,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/article/commentlike/:id',firebaseTokenVerify, async(req, res)=>{
+        app.get('/article/commentlike/:id', async(req, res)=>{ //
             const id = req.params.id
             const commentId= {commentId: id}
             const result = await articlesCommentLikeCollection.find(commentId).toArray()
@@ -201,7 +198,7 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/article/commentreply/:id',firebaseTokenVerify, async(req, res)=>{
+        app.get('/article/commentreply/:id', async(req, res)=>{ //
             const id = req.params.id;
             const result = await articlesCommentReplyCollection.find({commentId: id}).toArray()
             res.send(result)
